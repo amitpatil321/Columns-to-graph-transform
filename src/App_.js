@@ -1,53 +1,21 @@
 import React, { Component } from "react";
 import { Table, Row, Col } from "antd";
-import { SelectableGroup, createSelectable } from "react-selectable-fast";
+import { SelectableGroup, createSelectable } from "react-selectable";
 
 import "react-table-drag-select/style.css";
 
 import "./App.css";
-
-const PrintData = ({ selectableRef, isSelected, isSelecting, children }) => {
-  return (
-    <div ref={selectableRef} className={isSelected ? "selected" : null}>
-      {children}
-    </div>
-  );
-};
-
-const SelectableComponent = createSelectable(PrintData);
 
 class App extends Component {
   state = {
     dragStart: false,
     tableFormat: [],
     selectedKeys: [],
-    dataObj: [],
   };
 
-  handleSelection = (selectedKeys) => {
-    this.setState({ selectedKeys }, () => {
-      let dataArr = [];
-      selectedKeys.map((each) => {
-        const { selectableKey, children } = each.props;
-        const [id, column] = selectableKey.split("-");
-        dataArr.push({ id: id, [column]: children });
-      });
-      const result = Object.values(
-        dataArr.reduce((grouped, item) => {
-          const { id, ...rest } = item;
-          if (!grouped[id]) {
-            grouped[id] = { id };
-          }
-          Object.assign(grouped[id], rest);
-          return grouped;
-        }, {})
-      );
-    });
-  };
-
-  resetSelection = (selectedKeys) => {
-    this.setState({ selectedKeys: [] });
-  };
+  handleSelection(selectedKeys) {
+    this.setState({ selectedKeys });
+  }
 
   data = [
     {
@@ -232,15 +200,109 @@ class App extends Component {
     },
   ];
 
+  columns = [
+    {
+      title: "Name",
+      dataIndex: "nickname",
+      key: "nickname",
+      onCell: (record, rowIndex) => {
+        return {
+          onMouseDown: (event) => this.onMouseDown(record, event),
+          onMouseOver: (event) => this.dragging(event, record, record),
+          onMouseUp: (event) => this.onMouseUp(event, record, record),
+        };
+      },
+      render(text, record, index) {
+        // const colIndex = this.data.findIndex((x) => x.id === record.id);
+        return {
+          props: {
+            id: `${record.id}-${index}`,
+          },
+          children: (
+            <SelectableComponent
+              key={i}
+              selected={selected}
+              selectableKey={item.id}
+            >
+              <div className={"selectable"}>{text}</div>
+            </SelectableComponent>
+          ),
+        };
+      },
+    },
+    {
+      title: "Missing Field",
+      dataIndex: "missingField",
+      key: "missingField",
+      onCell: (record, rowIndex) => {
+        return {
+          onMouseDown: (event) => this.onMouseDown(record, event),
+          onMouseOver: (event) => this.dragging(event, record),
+          onMouseUp: (event) => this.onMouseUp(event, record),
+        };
+      },
+      render(text, record, index) {
+        return {
+          props: {
+            id: `${record.id}-${index}`,
+          },
+          children: <div className={"selectable"}>{text}</div>,
+        };
+      },
+    },
+    {
+      title: "Object Type",
+      dataIndex: "objectType",
+      key: "objectType",
+      onCell: (record, rowIndex) => {
+        return {
+          onMouseDown: (event) => this.onMouseDown(record, event),
+          onMouseOver: (event) => this.dragging(event, record),
+          onMouseUp: (event) => this.onMouseUp(event, record),
+        };
+      },
+      render(text, record, index) {
+        return {
+          props: {
+            id: `${record.id}-${index}`,
+          },
+          children: <div className={"selectable"}>{text}</div>,
+        };
+      },
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      onCell: (record, rowIndex) => {
+        return {
+          onMouseDown: (event) => this.onMouseDown(record, event),
+          onMouseOver: (event) => this.dragging(event, record),
+          onMouseUp: (event) => this.onMouseUp(event, record),
+        };
+      },
+      render(text, record, index) {
+        return {
+          props: {
+            id: `${record.id}-${index}`,
+          },
+          children: <div className={"selectable"}>{text}</div>,
+        };
+      },
+    },
+  ];
+
   getIndex = (record) => this.data.findIndex((x) => x.id === record.id);
 
-  componentDidMount() {
-    window.localStorage.setItem("data", JSON.stringify([]));
-  }
+  // componentDidMount() {
+  //   document
+  //     .getElementById("table")
+  //     .addEventListener("mousedown", this.handleTouchEndWindow);
+  // }
 
   handleTouchEndWindow = (event) => {
     this.setState({ dragStart: true });
-    // console.log(event.target);
+    console.log(event.target);
   };
 
   onCellClick = (record, event) => {
@@ -254,7 +316,7 @@ class App extends Component {
   };
 
   onMouseDown = (record, event) => {
-    // console.log(record, event);
+    console.log(record, event);
     this.setState({ dragStart: true });
   };
   onMouseUp = () => {
@@ -262,123 +324,19 @@ class App extends Component {
   };
   dragging = (event, record) => {
     const { dragStart } = this.state;
-    // if (dragStart) console.log(record.id);
+    if (dragStart) console.log(record.id);
   };
 
   render = () => {
-    const { selectedKeys: selectedData } = this.state;
-    let columns = [
-      {
-        title: "Id",
-        dataIndex: "id",
-        key: "id",
-      },
-      {
-        title: "Name",
-        dataIndex: "nickname",
-        key: "nickname",
-        render(text, record, index) {
-          const { dataObj } = this.state;
-          let selected = selectedData.indexOf(`${record.id}-nickname`) > -1;
-          return {
-            props: {
-              className: dataObj.filter((each) => each.id === record.id)
-                ? "selected"
-                : "",
-            },
-            children: (
-              <SelectableComponent
-                selected={selected}
-                selectableKey={`${record.id}-nickname`}
-              >
-                {text}
-              </SelectableComponent>
-            ),
-          };
-        },
-      },
-      {
-        title: "Missing Field",
-        dataIndex: "missingField",
-        key: "missingField",
-        render(text, record, index) {
-          let selected = selectedData.indexOf(`${record.id}-missingField`) > -1;
-          return {
-            props: {
-              className:
-                selectedData.indexOf(`${record.id}-missingField`) > -1
-                  ? "selected"
-                  : "",
-            },
-            children: (
-              <SelectableComponent
-                selected={selected}
-                selectableKey={`${record.id}-missingField`}
-              >
-                {text}
-              </SelectableComponent>
-            ),
-          };
-        },
-      },
-      {
-        title: "Object Type",
-        dataIndex: "objectType",
-        key: "objectType",
-        render(text, record, index) {
-          let selected = selectedData.indexOf(`${record.id}-objectType`) > -1;
-          return {
-            props: {
-              className:
-                selectedData.indexOf(`${record.id}-objectType`) > -1
-                  ? "selected"
-                  : "",
-            },
-            children: (
-              <SelectableComponent
-                selected={selected}
-                selectableKey={`${record.id}-objectType`}
-              >
-                {text}
-              </SelectableComponent>
-            ),
-          };
-        },
-      },
-      {
-        title: "Status",
-        dataIndex: "status",
-        key: "status",
-        render(text, record, index) {
-          let selected = selectedData.indexOf(`${record.id}-status`) > -1;
-          return {
-            props: {
-              className:
-                selectedData.indexOf(`${record.id}-status`) > -1
-                  ? "selected"
-                  : "",
-            },
-            children: (
-              <SelectableComponent
-                selected={selected}
-                selectableKey={`${record.id}-status`}
-              >
-                {text}
-              </SelectableComponent>
-            ),
-          };
-        },
-      },
-    ];
+    const { tableFormat } = this.state;
+    // console.log(tableFormat);
     return (
       <Row>
         <Col span={4} />
         <Col span={16}>
-          <button onClick={this.resetSelection}>Reset</button>
-          <SelectableGroup onSelectionFinish={this.handleSelection}>
+          <SelectableGroup onSelection={this.handleSelection}>
             <Table
               id="table"
-              rowKey={(record) => record.id}
               // onRow={(record, rowIndex) => {
               //   return {
               //     onMouseDown: (event) => this.handleCell(record, rowIndex, event),
@@ -387,7 +345,7 @@ class App extends Component {
               //     }, // click row
               //   };
               // }}
-              columns={columns}
+              columns={this.columns}
               dataSource={this.data}
             />
           </SelectableGroup>
