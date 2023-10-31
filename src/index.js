@@ -1,8 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
+import { Provider } from "react-redux";
+
 import AppFast from "./AppFast";
+import store from "./store/store";
+import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<AppFast name="amit" />);
+root.render(
+  <Provider store={store}>
+    <AppFast />
+  </Provider>,
+);
