@@ -15,6 +15,8 @@ const PieChart = () => {
 
   const { category, values } = graphColumns;
 
+  console.log(category, values);
+
   const makeGraph = () => {
     let chart = null;
     const root = am5.Root.new("pieChartdiv");
@@ -30,7 +32,7 @@ const PieChart = () => {
 
     const series = chart.series.push(
       am5percent.PieSeries.new(root, {
-        valueField: values,
+        valueField: values[0],
         categoryField: category,
         alignLabels: false,
       }),

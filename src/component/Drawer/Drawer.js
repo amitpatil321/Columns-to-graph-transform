@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
-import { Drawer, Segmented, Row, Col, Divider, Tabs } from "antd";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { Drawer, Row, Col, Divider, Tabs } from "antd";
+import { useDispatch } from "react-redux";
 
 import { setTableAction } from "../../store/appReducer";
 
@@ -10,44 +10,23 @@ import Columns from "../Columns/Columns";
 import BarChart from "../Charts/BarChart";
 import StackedChart from "../Charts/StackedChart";
 
-const GraphDrawer = ({ columns }) => {
+const GraphDrawer = ({ columns, graphType, setGraphType }) => {
   const dispatch = useDispatch();
-  const { tableAction, selectedRows } = useSelector(
-    ({ appReducer }) => appReducer,
-  );
-
-  console.log(tableAction);
-
-  // setAction, selectedData, tableAction;
   const [graphColumns, setGraphColumns] = useState([]);
-  const [graphData, setGraphData] = useState();
-
-  useEffect(() => {
-    const result = selectedRows.map((item) => {
-      const filteredObject = {};
-      graphColumns.forEach((prop) => {
-        // eslint-disable-next-line no-prototype-builtins
-        if (item.hasOwnProperty(prop)) {
-          filteredObject[prop] = item[prop];
-        }
-      });
-      return filteredObject;
-    });
-    setGraphData(result);
-  }, [graphColumns]);
 
   return (
     <Drawer
       title="Statistics"
       placement="right"
       width="60%"
-      onClose={() => dispatch(setTableAction(null))}
-      open={tableAction || false}
+      // onClose={() => dispatch(setTableAction(null))}
+      onClose={() => setGraphType(false)}
+      open={graphType}
       destroyOnClose>
       <Row gutter={[4, 16]}>
         <Col span={24}>
           <Tabs
-            defaultActiveKey={tableAction}
+            defaultActiveKey={graphType}
             items={[
               {
                 key: "clustered",
@@ -87,6 +66,7 @@ const GraphDrawer = ({ columns }) => {
               },
             ]}
             onChange={(selected) => dispatch(setTableAction(selected))}
+            // onChange={(selected) => setActiveTab(selected)}
             indicatorSize={(origin) => origin - 16}
           />
         </Col>
@@ -95,28 +75,23 @@ const GraphDrawer = ({ columns }) => {
   );
 };
 
-const PrintGraph = ({ graph, columns, graphColumns, setGraphColumns }) => (
+const PrintGraph = ({ graph, columns }) => (
   <>
-    <Columns
-      columns={columns}
-      // graphColumns={graphColumns}
-      // setGraphColumns={setGraphColumns}
-    />
+    <Columns columns={columns} />
     <Divider />
     {graph}
   </>
 );
 
 PrintGraph.propTypes = {
-  graphType: PropTypes.string,
   graph: PropTypes.element,
   columns: PropTypes.any,
-  graphColumns: PropTypes.any,
-  setGraphColumns: PropTypes.func,
 };
 
 GraphDrawer.propTypes = {
   columns: PropTypes.array,
+  graphType: PropTypes.bool,
+  setGraphType: PropTypes.func,
 };
 
 export default GraphDrawer;

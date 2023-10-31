@@ -5,7 +5,7 @@ import { SelectableGroup, createSelectable } from "react-selectable-fast";
 import { Table, Dropdown } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 
-import { setSelectedRows, setTableAction } from "../store/appReducer";
+import { setSelectedRows } from "../store/appReducer";
 
 import CONFIG from "../config/config";
 
@@ -33,7 +33,7 @@ const items = [
   },
 ];
 
-const AntdTableToGraph = ({ columns, dataSource }) => {
+const AntdTableToGraph = ({ columns, dataSource, setGraphType }) => {
   const dispatch = useDispatch();
   const { uniqId } = useSelector(({ appReducer }) => appReducer);
 
@@ -46,6 +46,7 @@ const AntdTableToGraph = ({ columns, dataSource }) => {
       const { selectableKey, children } = each.props;
       const [id, column] = selectableKey.split(CONFIG.KEY_SEPERATOR);
       dataArr.push({ [CONFIG.UNIQID_KEY]: id, [column]: children });
+      return each;
     });
     const result = Object.values(
       dataArr.reduce((grouped, item) => {
@@ -61,6 +62,7 @@ const AntdTableToGraph = ({ columns, dataSource }) => {
     dispatch(setSelectedRows(result));
   };
 
+  // Modify columns array and add selectable component to it
   const modColumns = columns.map((column) => ({
     ...column,
     render(text, record, index) {
@@ -87,7 +89,8 @@ const AntdTableToGraph = ({ columns, dataSource }) => {
       <Dropdown
         menu={{
           items,
-          onClick: (selectedOpt) => dispatch(setTableAction(selectedOpt?.key)),
+          // onClick: (selectedOpt) => dispatch(setTableAction(selectedOpt?.key)),
+          onClick: (selectedOpt) => setGraphType(selectedOpt?.key),
         }}
         trigger={["contextMenu"]}
         disabled={!colsSelected?.length}>
@@ -104,7 +107,7 @@ const AntdTableToGraph = ({ columns, dataSource }) => {
             columns={modColumns}
             dataSource={dataSource}
             pagination={{
-              pageSize: 15,
+              pageSize: CONFIG.TABLE_PAGE_SIZE,
             }}
           />
         </div>
@@ -114,10 +117,9 @@ const AntdTableToGraph = ({ columns, dataSource }) => {
 };
 
 AntdTableToGraph.propTypes = {
-  columns: PropTypes.shape({
-    map: PropTypes.func,
-  }),
-  dataSource: PropTypes.oneOfType([PropTypes.object]),
+  columns: PropTypes.arrayOf(PropTypes.object),
+  setGraphType: PropTypes.func,
+  dataSource: PropTypes.arrayOf(PropTypes.object),
 };
 
 const PrintData = ({ selectableRef, isSelected, isSelecting, children }) => (

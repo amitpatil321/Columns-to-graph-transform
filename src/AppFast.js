@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col } from "antd";
+import { useDispatch } from "react-redux";
+
+import { setTableAction } from "./store/appReducer";
 
 import AntdTableToGraph from "./component/AntdTableToGraph";
 import Drawer from "./component/Drawer/Drawer";
 
-import { data, countries } from "./data";
+import { countries } from "./data";
 
 import "./App.css";
 
 const App = () => {
+  const dispatch = useDispatch();
+  const [graphType, setGraphType] = useState();
   const columns = [
     {
       title: "Country",
@@ -37,19 +42,24 @@ const App = () => {
     },
   ];
 
-  // Add uniq id to datasource
-  // let data = countries?.map((each) => {
-  //   return { ...each, uuid: uuidv4() };
-  // });
-
-  // console.log(data);
+  useEffect(() => {
+    dispatch(setTableAction(graphType));
+  }, [graphType]);
 
   return (
     <Row>
       <Col span={4} />
       <Col span={16}>
-        <AntdTableToGraph columns={columns} dataSource={countries} />
-        <Drawer columns={columns} dataSource={countries} />
+        <AntdTableToGraph
+          columns={columns}
+          dataSource={countries}
+          setGraphType={setGraphType}
+        />
+        <Drawer
+          graphType={graphType}
+          setGraphType={setGraphType}
+          columns={columns}
+        />
       </Col>
       <Col span={4} />
     </Row>

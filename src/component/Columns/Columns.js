@@ -1,18 +1,18 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { memo } from "react";
 import { Checkbox, Row, Col, Select, Radio } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 
 import CONFIG from "../../config/config";
 import { setGraphColumns } from "../../store/appReducer";
 
-const Columns = ({ columns }) => {
+const Columns = memo(({ columns }) => {
   const dispatch = useDispatch();
   const { tableAction, graphColumns, selectedRows } = useSelector(
     ({ appReducer }) => appReducer,
   );
 
-  console.log(graphColumns);
+  const { category, values } = graphColumns;
 
   // Get all other column names except id, we dont want it
   const options = Object.keys(selectedRows[0])?.filter(
@@ -34,7 +34,7 @@ const Columns = ({ columns }) => {
       <Col span={22}>
         <Select
           placeholder="Select a category"
-          defaultValue={graphColumns?.category}
+          defaultValue={category}
           style={{ minWidth: 200 }}
           onChange={(selected) =>
             dispatch(setGraphColumns({ ...graphColumns, category: selected }))
@@ -48,9 +48,8 @@ const Columns = ({ columns }) => {
       <Col span={22}>
         {tableAction === "pie" ? (
           <Radio.Group
-            options={colOptions?.filter(
-              (each) => each.value !== graphColumns?.category,
-            )}
+            options={colOptions?.filter((each) => each.value !== category)}
+            value={values[0] || null}
             onChange={(event) => {
               dispatch(
                 setGraphColumns({
@@ -62,7 +61,7 @@ const Columns = ({ columns }) => {
           />
         ) : (
           <Checkbox.Group
-            defaultValue={[...graphColumns.values]}
+            defaultValue={graphColumns.values}
             options={colOptions?.filter(
               (each) => each.value !== graphColumns?.category,
             )}
@@ -76,7 +75,7 @@ const Columns = ({ columns }) => {
       </Col>
     </Row>
   );
-};
+});
 
 Columns.propTypes = {
   columns: PropTypes.array,

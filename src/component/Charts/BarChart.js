@@ -112,6 +112,7 @@ const BarChart = () => {
 
     graphColumns?.values?.map((each) => {
       makeSeries(each, each);
+      return each;
     });
     // Make stuff animate on load
     // https://www.amcharts.com/docs/v5/concepts/animations/
