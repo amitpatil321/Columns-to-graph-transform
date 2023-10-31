@@ -1,58 +1,59 @@
-import React, { Component } from "react";
-import { Table, Row, Col } from "antd";
+import React from "react";
+import { Row, Col } from "antd";
 
 import AntdTableToGraph from "./component/AntdTableToGraph";
-import { data } from "./data";
+import Drawer from "./component/Drawer/Drawer";
+
+import { data, countries } from "./data";
 
 import "./App.css";
 
-class App extends Component {
-  columns = [
+const App = () => {
+  const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Country",
+      dataIndex: "Importers",
+      key: "Importers",
     },
     {
-      title: "Gender",
-      dataIndex: "gender",
-      key: "gender",
+      title: "2018",
+      dataIndex: "2018",
+      key: "2018",
     },
     {
-      title: "Company",
-      dataIndex: "company",
-      key: "company",
+      title: "2019",
+      dataIndex: "2019",
+      key: "2019",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "2020",
+      dataIndex: "2020",
+      key: "2020",
     },
     {
-      title: "Favorite Fruit",
-      dataIndex: "favoriteFruit",
-      key: "favoriteFruit",
+      title: "2021",
+      dataIndex: "2021",
+      key: "2021",
     },
   ];
 
-  handleSelection = (selection) => console.log(selection);
+  // Add uniq id to datasource
+  // let data = countries?.map((each) => {
+  //   return { ...each, uuid: uuidv4() };
+  // });
 
-  render = () => {
-    return (
-      <Row>
-        <Col span={4} />
-        <Col span={16}>
-          <AntdTableToGraph
-            rowKey={(record) => record._id}
-            columns={this.columns}
-            dataSource={data}
-            handleSelection={this.handleSelection}
-          />
-        </Col>
-        <Col span={4} />
-      </Row>
-    );
-  };
-}
+  // console.log(data);
+
+  return (
+    <Row>
+      <Col span={4} />
+      <Col span={16}>
+        <AntdTableToGraph columns={columns} dataSource={countries} />
+        <Drawer columns={columns} dataSource={countries} />
+      </Col>
+      <Col span={4} />
+    </Row>
+  );
+};
 
 export default App;
