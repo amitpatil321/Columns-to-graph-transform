@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/table-select-graph/static/css/main.f3a8cc9c.css",
+    "main.js": "/table-select-graph/static/js/main.09e94ab0.js",
+    "index.html": "/table-select-graph/index.html",
+    "main.f3a8cc9c.css.map": "/table-select-graph/static/css/main.f3a8cc9c.css.map",
+    "main.09e94ab0.js.map": "/table-select-graph/static/js/main.09e94ab0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f3a8cc9c.css",
+    "static/js/main.09e94ab0.js"
+  ]
+}
