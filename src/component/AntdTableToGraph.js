@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setSelectedRows } from "../store/appReducer";
 
 import CONFIG from "../config/config";
+import { utils } from "../utils/utils";
 
 import "../App.css";
 
@@ -35,8 +36,7 @@ const items = [
 
 const AntdTableToGraph = ({ columns, dataSource, setGraphType }) => {
   const dispatch = useDispatch();
-  const { uniqId } = useSelector(({ appReducer }) => appReducer);
-
+  const { uniqId, selectedRows } = useSelector(({ appReducer }) => appReducer);
   const [colsSelected, setColsSelected] = useState();
 
   const onSelection = (selectedKeys) => {
@@ -62,7 +62,7 @@ const AntdTableToGraph = ({ columns, dataSource, setGraphType }) => {
     dispatch(setSelectedRows(result));
   };
 
-  // Modify columns array and add selectable component to it
+  // Modify columns array and wrap with selectable component
   const modColumns = columns.map((column) => ({
     ...column,
     render(text, record, index) {
@@ -79,6 +79,22 @@ const AntdTableToGraph = ({ columns, dataSource, setGraphType }) => {
     },
   }));
 
+  // Handle menu item click
+  const onMenuClick = (selected) => {
+    console.log(selectedRows);
+    if (selected === "csv") {
+      (async () => {
+        try {
+          const csv = await utils.convertObjectToCSV(selectedRows);
+          utils.downloadCSV(csv, "records.csv");
+          console.log(csv);
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      })();
+    } else setGraphType(selected);
+  };
+
   return (
     <SelectableGroup
       onSelectionFinish={onSelection}
@@ -89,8 +105,7 @@ const AntdTableToGraph = ({ columns, dataSource, setGraphType }) => {
       <Dropdown
         menu={{
           items,
-          // onClick: (selectedOpt) => dispatch(setTableAction(selectedOpt?.key)),
-          onClick: (selectedOpt) => setGraphType(selectedOpt?.key),
+          onClick: (selectedOpt) => onMenuClick(selectedOpt?.key),
         }}
         trigger={["contextMenu"]}
         disabled={!colsSelected?.length}>
